@@ -124,6 +124,29 @@ print("validation macro F1 (recomputed):", scores(confusion(predict(unet, xv), y
 display(pd.DataFrame([experiments["unet_pilot"]] + experiments["unet_variants"])[["name", "parameters", "epochs", "train_seconds", "val_macro_f1"]])
 display(Image(os.path.join(OUT, "unet_variants_curves.png")))
 """),
+    md("""
+## 4b. Pretrained ResNet18-UNet (Sarra Fassakh)
+
+A second deep model, to test whether transfer learning helps with only 100 training patients. The encoder is an ImageNet-pretrained ResNet18; the decoder is U-Net style. Training had two stages: first the pretrained encoder was frozen and only the decoder trained (learning rate 0.001, up to 10 epochs); then the last ResNet block (layer4) was unfrozen and fine-tuned with smaller learning rates (0.0001 for layer4, 0.0005 for the decoder, up to 15 epochs, early stopping). Same preprocessing, same patient split (`split.json`, seed 261) and the same 50 test patients as our U-Net. Trained on a laptop CPU in 39.2 minutes.
+
+Its full code and outputs are in appendix E. It saves its weights as `resnet18_unet_acdc.pt` (48 MB). Below we load its saved results.
+"""),
+    code("""
+rn = json.load(open(os.path.join(OUT, "resnet18_results.json")))
+u_val = scores(confusion(predict(unet, xv), yv))
+u_test = experiments["test_segmentation"]["U-Net"]["test"]
+rows = []
+for name, v, t, params in (("U-Net (from scratch)", u_val, u_test, 483204),
+                           ("Pretrained ResNet18-UNet", None, None, rn["parameters"])):
+    if v is None:
+        vs, ts = rn["val_segmentation"], rn["test_segmentation"]
+        rows.append({"model": name, "parameters": params, "val macro F1": vs["Macro_F1"], "test macro F1": ts["Macro_F1"],
+                     "test RV F1": ts["RV_F1"], "test Myo F1": ts["Myo_F1"], "test LV F1": ts["LV_F1"]})
+    else:
+        rows.append({"model": name, "parameters": params, "val macro F1": v["macro_f1"], "test macro F1": t["macro_f1"],
+                     "test RV F1": t["f1"][0], "test Myo F1": t["f1"][1], "test LV F1": t["f1"][2]})
+display(pd.DataFrame(rows).round(3))
+"""),
     md("## 5. Diagnosis models\n\nTwelve measurements per patient from the outlines: volumes, ejection fractions, muscle mass, body-size-adjusted values and the thickest wall. We compare logistic regression at five strengths of regularisation with 5-fold cross-validation repeated 5 times, on the 100 training patients' expert outlines."),
     code(take("acdc_experiments.py", {"meta", "measure", "MEASURES", "patient_table"})),
     code("""
@@ -162,14 +185,22 @@ if os.path.exists(forest_file):
     rows.append(("forest outlines", patient_table(tnames, TEST_DATA, te, f_pred)[0]))
 display(pd.DataFrame([{"outlines": k, "diagnosis accuracy": (diag.predict(X) == y_test).mean(),
                        "LV EF error (points)": 100 * np.abs(X[:, 2] - X_true[:, 2]).mean(),
-                       "RV EF error (points)": 100 * np.abs(X[:, 5] - X_true[:, 5]).mean()} for k, X in rows]).round(3))
+                       "RV EF error (points)": 100 * np.abs(X[:, 5] - X_true[:, 5]).mean()} for k, X in rows]
+                     # ResNet row: accuracy printed by acdc_resnet18_unet.ipynb (appendix E), errors from its results file
+                     + [{"outlines": "ResNet18-UNet outlines", "diagnosis accuracy": 0.86,
+                         "LV EF error (points)": rn["test_mae"]["lv_ef_points"], "RV EF error (points)": rn["test_mae"]["rv_ef_points"]}]).round(3))
 """),
     md("## 7. Failure and complexity analysis"),
     code("""
-print("U-Net test macro F1 by subset:", json.dumps(breakdown(u_pred, te), indent=1))
+ub = breakdown(u_pred, te)
+display(pd.DataFrame([{"subset": f"{k}: {sub}", "U-Net": v, "ResNet18-UNet": rn["test_breakdown"][k][sub]}
+                      for k in ub for sub, v in ub[k].items()]).round(3))
+uc = experiments["test_segmentation"]["U-Net"]["confidence"]
+display(pd.DataFrame([{"model": "U-Net", **uc}, {"model": "ResNet18-UNet", **rn["test_confidence"]}]))
 display(pd.DataFrame([
     {"model": "Random forest", "parameters": "200 trees", "train": "3 min per fit, ~1 h with tuning", "s per slice": experiments["test_segmentation"]["random forest"]["seconds_per_slice"], "file MB": 272, "test macro F1": experiments["test_segmentation"]["random forest"]["test"]["macro_f1"]},
     {"model": "U-Net (final)", "parameters": 483204, "train": "30 min", "s per slice": experiments["test_segmentation"]["U-Net"]["seconds_per_slice"], "file MB": 2, "test macro F1": experiments["test_segmentation"]["U-Net"]["test"]["macro_f1"]},
+    {"model": "Pretrained ResNet18-UNet", "parameters": rn["parameters"], "train": "39.2 min (CPU)", "s per slice": rn["test_seconds_per_slice"], "file MB": 48, "test macro F1": rn["test_segmentation"]["Macro_F1"]},
 ]))
 display(Image(os.path.join(OUT, "test_examples.png")))
 """),
@@ -182,6 +213,30 @@ for f, title in (("acdc_forest_baseline.py", "A. Preprocessing and random forest
     cells.append(md(f"### {title} (`{f}`)"))
     cells.append(md("```python\n" + (ROOT / f).read_text().rstrip() + "\n```"))
     cells.append(code(f"# Runs the script above, so the code is exactly what produced our results.\nif RUN_TRAINING:\n    %run {f}"))
+
+cells.append(md("### E. Pretrained ResNet18-UNet (Sarra Fassakh)\n\nHer full code, cell by cell, followed by the outputs it produced when she ran it on her laptop (CPU, 39.2 min of training). Only one change from her original: the data, split and model paths point to this project's folders. Set `RUN_RESNET_TRAINING = True` to retrain it."))
+cells.append(code("RUN_RESNET_TRAINING = False   # True retrains the ResNet18-UNet (about 40 min on a 6-core CPU)"))
+PATHS = {'TRAIN_DIR  = "training"': 'TRAIN_DIR  = DATA',
+         'TEST_DIR   = "testing"': 'TEST_DIR   = TEST_DATA',
+         'SPLIT_PATH = "split.json"': 'SPLIT_PATH = os.path.join(OUT, "split.json")',
+         'SAVE_PATH  = "resnet18_unet_acdc.pt"': 'SAVE_PATH  = os.path.join(MODEL_DIR, "resnet18_unet_acdc.pt")'}
+for c in json.loads((ROOT / "acdc_resnet18_unet.ipynb").read_text())["cells"]:
+    src = "".join(c["source"]).rstrip()
+    if c["cell_type"] != "code":
+        cells.append(md(src))
+        continue
+    for a, b in PATHS.items():
+        src = src.replace(a, b)
+    title = src.splitlines()[0] if src.startswith("#") else "# ResNet18-UNet"
+    cells.append(code(title + "\nif RUN_RESNET_TRAINING:\n" + "\n".join("    " + l if l else "" for l in src.splitlines())))
+    text = "".join("".join(o.get("text", "")) for o in c.get("outputs", []) if o.get("output_type") == "stream").rstrip()
+    pngs = [o["data"]["image/png"] for o in c.get("outputs", []) if "image/png" in o.get("data", {})]
+    if text or pngs:
+        cell = md("**Her output:**\n" + ("```text\n" + text + "\n```\n" if text else "")
+                  + "".join(f"\n![plot](attachment:plot{k}.png)\n" for k in range(len(pngs))))
+        if pngs:
+            cell["attachments"] = {f"plot{k}.png": {"image/png": png if isinstance(png, str) else "".join(png)} for k, png in enumerate(pngs)}
+        cells.append(cell)
 
 nb = {"cells": cells, "metadata": {"kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"},
                                    "language_info": {"name": "python"}}, "nbformat": 4, "nbformat_minor": 5}
