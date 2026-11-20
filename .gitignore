@@ -1,0 +1,5 @@
+cmps261-work/data/
+cmps261-work/models/acdc_forest.joblib
+__pycache__/
+.DS_Store
+.ipynb_checkpoints/

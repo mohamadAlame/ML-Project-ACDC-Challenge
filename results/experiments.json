@@ -1,0 +1,262 @@
+{
+ "forest_without_position": {
+  "validation": {
+   "precision": [
+    0.1647,
+    0.3133,
+    0.3009
+   ],
+   "recall": [
+    0.0603,
+    0.0915,
+    0.1915
+   ],
+   "f1": [
+    0.0882,
+    0.1416,
+    0.234
+   ],
+   "macro_f1": 0.1546,
+   "pixel_accuracy": 0.9363
+  },
+  "train_seconds": 212.1,
+  "with_position_macro_f1": 0.5901
+ },
+ "unet_pilot": {
+  "name": "A: pilot (no augmentation, cross-entropy)",
+  "base": 16,
+  "epochs": 30,
+  "val_macro_f1": 0.9017,
+  "parameters": 483204,
+  "train_seconds": 617.8
+ },
+ "unet_variants": [
+  {
+   "name": "B: + augmentation",
+   "base": 16,
+   "augmentation": true,
+   "dice": false,
+   "epochs": 40,
+   "parameters": 483204,
+   "train_seconds": 874.1,
+   "val_macro_f1": 0.9086,
+   "best_epoch": 35,
+   "last5_mean": 0.9029,
+   "last5_min": 0.8889,
+   "file_mb": 1.97,
+   "path": "cmps261-work/models/acdc_unet_B.pt"
+  },
+  {
+   "name": "C: + augmentation + Dice loss",
+   "base": 16,
+   "augmentation": true,
+   "dice": true,
+   "epochs": 40,
+   "parameters": 483204,
+   "train_seconds": 880.8,
+   "val_macro_f1": 0.9139,
+   "best_epoch": 35,
+   "last5_mean": 0.9089,
+   "last5_min": 0.9058,
+   "file_mb": 1.97,
+   "path": "cmps261-work/models/acdc_unet_C.pt"
+  },
+  {
+   "name": "D: wider (32) + aug + Dice",
+   "base": 32,
+   "augmentation": true,
+   "dice": true,
+   "epochs": 40,
+   "parameters": 1927940,
+   "train_seconds": 1875.6,
+   "val_macro_f1": 0.9149,
+   "best_epoch": 40,
+   "last5_mean": 0.9127,
+   "last5_min": 0.9113,
+   "file_mb": 7.76,
+   "path": "cmps261-work/models/acdc_unet_D.pt"
+  },
+  {
+   "name": "E: aug + Dice, 80 epochs",
+   "base": 16,
+   "augmentation": true,
+   "dice": true,
+   "epochs": 80,
+   "parameters": 483204,
+   "train_seconds": 1818.5,
+   "val_macro_f1": 0.9197,
+   "best_epoch": 58,
+   "last5_mean": 0.9139,
+   "last5_min": 0.91,
+   "file_mb": 1.97,
+   "path": "cmps261-work/models/acdc_unet_E.pt"
+  }
+ ],
+ "unet_chosen": "E: aug + Dice, 80 epochs",
+ "diagnosis_cv": {
+  "logistic regression C=0.01": {
+   "accuracy": 0.908,
+   "std": 0.0643
+  },
+  "logistic regression C=0.1": {
+   "accuracy": 0.938,
+   "std": 0.0605
+  },
+  "logistic regression C=1": {
+   "accuracy": 0.934,
+   "std": 0.0484
+  },
+  "logistic regression C=10": {
+   "accuracy": 0.928,
+   "std": 0.0549
+  },
+  "logistic regression C=100": {
+   "accuracy": 0.916,
+   "std": 0.0595
+  },
+  "neural network (16 hidden) alpha=0.001": {
+   "accuracy": 0.92,
+   "std": 0.06
+  },
+  "neural network (16 hidden) alpha=0.01": {
+   "accuracy": 0.92,
+   "std": 0.06
+  },
+  "neural network (16 hidden) alpha=0.1": {
+   "accuracy": 0.924,
+   "std": 0.0618
+  },
+  "neural network (16 hidden) alpha=1": {
+   "accuracy": 0.938,
+   "std": 0.0553
+  },
+  "random forest": {
+   "accuracy": 0.934,
+   "std": 0.0578
+  }
+ },
+ "diagnosis_chosen": {
+  "classical": "logistic regression C=0.1",
+  "neural": "neural network (16 hidden) alpha=1"
+ },
+ "test_segmentation": {
+  "random forest": {
+   "test": {
+    "precision": [
+     0.4427,
+     0.3903,
+     0.5629
+    ],
+    "recall": [
+     0.6069,
+     0.6676,
+     0.6699
+    ],
+    "f1": [
+     0.5119,
+     0.4926,
+     0.6118
+    ],
+    "macro_f1": 0.5388,
+    "pixel_accuracy": 0.9504
+   },
+   "seconds_per_slice": 0.095,
+   "by_moment": {
+    "ED": 0.5791,
+    "ES": 0.4811
+   },
+   "by_slice_position": {
+    "first third": 0.5716,
+    "middle": 0.5723,
+    "last third": 0.4099
+   },
+   "by_group": {
+    "DCM": 0.552,
+    "HCM": 0.5195,
+    "MINF": 0.5467,
+    "NOR": 0.46,
+    "RV": 0.5523
+   },
+   "confidence": {
+    "calibration_error": 0.22,
+    "mean_conf_when_right": 0.744,
+    "mean_conf_when_wrong": 0.6188,
+    "share_right": 0.4559
+   }
+  },
+  "U-Net": {
+   "test": {
+    "precision": [
+     0.9345,
+     0.8725,
+     0.958
+    ],
+    "recall": [
+     0.904,
+     0.9025,
+     0.9496
+    ],
+    "f1": [
+     0.919,
+     0.8873,
+     0.9538
+    ],
+    "macro_f1": 0.92,
+    "pixel_accuracy": 0.9934
+   },
+   "seconds_per_slice": 0.0042,
+   "by_moment": {
+    "ED": 0.9266,
+    "ES": 0.9063
+   },
+   "by_slice_position": {
+    "first third": 0.9186,
+    "middle": 0.9378,
+    "last third": 0.8884
+   },
+   "by_group": {
+    "DCM": 0.9188,
+    "HCM": 0.91,
+    "MINF": 0.9164,
+    "NOR": 0.9229,
+    "RV": 0.9204
+   },
+   "confidence": {
+    "calibration_error": 0.0543,
+    "mean_conf_when_right": 0.9853,
+    "mean_conf_when_wrong": 0.8677,
+    "share_right": 0.9218
+   }
+  },
+  "all_background_accuracy": 0.9477
+ },
+ "test_diagnosis": {
+  "accuracy": {
+   "logistic regression C=0.1": {
+    "expert outlines": 0.92,
+    "U-Net outlines": 0.88,
+    "forest outlines": 0.4
+   },
+   "neural network (16 hidden) alpha=1": {
+    "expert outlines": 0.92,
+    "U-Net outlines": 0.86,
+    "forest outlines": 0.4
+   }
+  },
+  "patients": 50,
+  "mean_abs_error": {
+   "U-Net outlines": {
+    "lv_ef_points": 2.4,
+    "rv_ef_points": 4.7,
+    "lv_edv_ml": 4.999,
+    "rv_edv_ml": 8.5
+   },
+   "forest outlines": {
+    "lv_ef_points": 26.0,
+    "rv_ef_points": 35.4,
+    "lv_edv_ml": 52.015,
+    "rv_edv_ml": 59.181
+   }
+  }
+ }
+}

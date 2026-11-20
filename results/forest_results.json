@@ -1,0 +1,122 @@
+{
+ "best_config": {
+  "fg": 300,
+  "bg": 1200,
+  "trees": 200,
+  "depth": 20,
+  "leaf": 5,
+  "max_features": "sqrt",
+  "class_weight": null
+ },
+ "training_rows": 2267143,
+ "train_seconds": 194.4,
+ "predict_seconds_val": 24.6,
+ "preprocess_seconds": 3.8,
+ "heart_pixels_kept": 1.0,
+ "validation": {
+  "precision": [
+   0.4937,
+   0.4822,
+   0.667
+  ],
+  "recall": [
+   0.6118,
+   0.7085,
+   0.634
+  ],
+  "f1": [
+   0.5465,
+   0.5739,
+   0.6501
+  ],
+  "macro_f1": 0.5901,
+  "pixel_accuracy": 0.9594
+ },
+ "confusion_matrix": [
+  [
+   12797172,
+   83847,
+   150655,
+   61201
+  ],
+  [
+   69741,
+   151320,
+   15276,
+   10992
+  ],
+  [
+   50014,
+   13438,
+   181849,
+   11361
+  ],
+  [
+   9417,
+   57866,
+   29336,
+   167379
+  ]
+ ],
+ "all_background_accuracy": 0.9446,
+ "by_group": {
+  "DCM": 0.5925,
+  "HCM": 0.6495,
+  "MINF": 0.5421,
+  "NOR": 0.5319,
+  "RV": 0.6057
+ },
+ "by_moment": {
+  "ED": 0.6224,
+  "ES": 0.5422
+ },
+ "by_slice_position": {
+  "top": 0.6345,
+  "middle": 0.6087,
+  "bottom": 0.46
+ },
+ "per_patient": {
+  "patient007": 0.693,
+  "patient009": 0.6016,
+  "patient011": 0.3547,
+  "patient012": 0.6487,
+  "patient024": 0.6615,
+  "patient025": 0.6672,
+  "patient035": 0.7453,
+  "patient039": 0.4565,
+  "patient041": 0.714,
+  "patient042": 0.4743,
+  "patient053": 0.6223,
+  "patient058": 0.4436,
+  "patient071": 0.5689,
+  "patient075": 0.4839,
+  "patient077": 0.7058,
+  "patient078": 0.4269,
+  "patient081": 0.5877,
+  "patient083": 0.653,
+  "patient087": 0.6368,
+  "patient091": 0.5518
+ },
+ "feature_importance": {
+  "distance from centre": 0.4004,
+  "y position": 0.1326,
+  "x position": 0.0891,
+  "blur s=4": 0.0581,
+  "slice position": 0.0516,
+  "brightness": 0.0513,
+  "blur s=1": 0.0481,
+  "blur s=8": 0.0475,
+  "brightness vs surroundings": 0.0466,
+  "blur s=2": 0.0448,
+  "edge strength": 0.0298
+ },
+ "cv5_macro_f1": [
+  0.5758,
+  0.5801,
+  0.5875,
+  0.6188,
+  0.5591
+ ],
+ "cv5_mean": 0.5843,
+ "cv5_std": 0.0196
+}
