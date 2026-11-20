@@ -14,11 +14,11 @@ We outline the heart in cardiac MRI slices (right ventricle, myocardium, left ve
 
 ## Results on the 50 test patients
 
-| | Random forest | U-Net |
-|---|---:|---:|
-| Macro F1, 3 heart structures | 0.54 | **0.92** |
-| Diagnosis accuracy from its outlines | 0.40 | **0.88** |
-| Prediction time per slice | 0.095 s | 0.004 s |
+| | Random forest | Pretrained ResNet18-UNet | U-Net (from scratch) |
+| :--- | :---: | :---: | :---: |
+| Macro F1, 3 heart structures | 0.54 | 0.891 | 0.92 |
+| Diagnosis accuracy from its outlines | 0.40 | 0.86 | 0.88 |
+| Prediction time per slice | 0.095 s | 0.036 s (CPU) | 0.004 s (MPS) |
 
 Diagnosis from the experts' outlines reaches 0.92.
 
@@ -37,6 +37,9 @@ All model choices were made on 20 validation patients. The test set was used onc
 | `cmps261-work/models/acdc_unet_E.pt` | **Final trained U-Net** (PyTorch weights) |
 | `cmps261-work/models/acdc_diagnosis_final.joblib` | Final diagnosis model (scikit-learn) |
 | `Final Report.md`, `Group 26 Final Report.docx` | Report |
+| `acdc_resnet18_unet.ipynb` | Pretrained ResNet18-UNet (transfer learning), failure/calibration analysis, Part 2 (LR & GB), and 50-patient test |
+| `results/resnet18_results.json` | Verified validation and test metrics for Pretrained ResNet18-UNet |
+| `resnet18_unet_acdc.pt` (Releases) | Trained Pretrained ResNet18-UNet weights (PyTorch, available under GitHub Releases) |
 
 The random forest model (272 MB) is over GitHub's file limit, so it isn't included. `acdc_forest_baseline.py` rebuilds it.
 
