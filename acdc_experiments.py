@@ -64,7 +64,7 @@ def breakdown(preds, slices):
 # ---------------- data ----------------
 split = json.load(open(os.path.join(OUT, "split.json")))
 train_names, val_names = split["train"], split["val"]
-test_paths = sorted(glob.glob(TEST_DATA + "/patient*"))
+test_paths = sorted(glob.glob(glob.escape(TEST_DATA) + "/patient*"))
 if SMOKE:
     train_names, val_names, test_paths = train_names[::8], val_names[:3], test_paths[::17]
 data = {n: load_patient(os.path.join(DATA, n))[0] for n in train_names + val_names}
@@ -223,7 +223,7 @@ fig.savefig(os.path.join(OUT, "unet_variants_curves.png"), dpi=120, bbox_inches=
 # ---------------- 3. heart measurements and diagnosis models ----------------
 def meta(path):
     info = dict(re.findall(r"(\w+): (\S+)", open(os.path.join(path, "Info.cfg")).read()))
-    z = float(nib.load(glob.glob(path + "/*_frame??.nii.gz")[0]).header.get_zooms()[2])
+    z = float(nib.load(glob.glob(glob.escape(path) + "/*_frame??.nii.gz")[0]).header.get_zooms()[2])
     return info, z
 
 

@@ -53,7 +53,7 @@ def measure(path):
     return row, info["Group"], name
 
 
-rows, y, names = zip(*[measure(p) for p in sorted(glob.glob(DATA + "/patient*"))])
+rows, y, names = zip(*[measure(p) for p in sorted(glob.glob(glob.escape(DATA) + "/patient*"))])
 cols = list(rows[0])
 X = np.array([[r[c] for c in cols] for r in rows])
 y = np.array(y)

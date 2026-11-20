@@ -139,7 +139,7 @@ def main():
     os.makedirs(OUT, exist_ok=True)
     os.makedirs(MODEL_DIR, exist_ok=True)
     rng = np.random.default_rng(SEED)
-    patients = sorted(glob.glob(DATA + "/patient*"))
+    patients = sorted(glob.glob(glob.escape(DATA) + "/patient*"))
 
     t = time.time()
     data, kept, total = {}, 0, 0

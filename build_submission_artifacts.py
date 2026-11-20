@@ -202,6 +202,6 @@ def build_docx():
 
 
 if __name__ == '__main__':
-    build_notebook()
+    pass  # notebook is built by build_notebook.py
     build_docx()
     print('Built notebook and final report.')

@@ -72,7 +72,7 @@ def confusion(pred, y):
 
 
 split = json.load(open(os.path.join(OUT, "split.json")))
-data = {os.path.basename(p): load_patient(p)[0] for p in sorted(glob.glob(DATA + "/patient*"))}
+data = {os.path.basename(p): load_patient(p)[0] for p in sorted(glob.glob(glob.escape(DATA) + "/patient*"))}
 tr = [s for n in split["train"] for s in data[n]]
 va = [s for n in split["val"] for s in data[n]]
 xt, yt = tensors(tr)

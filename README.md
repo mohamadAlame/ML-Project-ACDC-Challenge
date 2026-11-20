@@ -28,7 +28,7 @@ All model choices were made on 20 validation patients. The test set was used onc
 
 | File | What it does |
 |---|---|
-| `Group 26 Final Project Notebook.ipynb` | All code in one notebook, with the result tables |
+| `Group 26 Final Project Notebook.ipynb` | All code in one notebook. Sections 1–7 run in about 2 minutes: preprocessing, then loading the saved models and recomputing the validation and test results. The appendix holds the full training code |
 | `acdc_forest_baseline.py` | Preprocessing, random forest tuning, 5-fold check |
 | `acdc_diagnosis_baseline.py` | Heart measurements and diagnosis models |
 | `acdc_unet_pilot.py` | First U-Net run |
