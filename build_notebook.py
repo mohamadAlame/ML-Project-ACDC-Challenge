@@ -40,6 +40,8 @@ The problem has two parts:
 1. **Segmentation:** label every pixel of a heart MRI slice as right ventricle, myocardium (muscle wall), left ventricle or background.
 2. **Diagnosis:** use measurements from those outlines to predict one of five patient groups.
 
+**Trained models:** the final U-Net and diagnosis model are in `cmps261-work/models/`. The random forest (272 MB) and the ResNet18-UNet (48 MB) are on the GitHub repository's Releases page (`v1.0-random-forest`, `v1.0-resnet18`), because they are too large for the repository; download them into `cmps261-work/models/`.
+
 Sections 1–7 run in a few minutes. They preprocess the data, load our saved trained models and recompute the results from them. The full training code is in the appendix, behind `RUN_TRAINING`, because training everything took about 2.5 hours.
 """),
     md("## 1. Setup"),
@@ -129,7 +131,7 @@ display(Image(os.path.join(OUT, "unet_variants_curves.png")))
 
 A second deep model, to test whether transfer learning helps with only 100 training patients. The encoder is an ImageNet-pretrained ResNet18; the decoder is U-Net style. Training had two stages: first the pretrained encoder was frozen and only the decoder trained (learning rate 0.001, up to 10 epochs); then the last ResNet block (layer4) was unfrozen and fine-tuned with smaller learning rates (0.0001 for layer4, 0.0005 for the decoder, up to 15 epochs, early stopping). Same preprocessing, same patient split (`split.json`, seed 261) and the same 50 test patients as our U-Net. Trained on a laptop CPU in 39.2 minutes.
 
-Its full code and outputs are in appendix E. It saves its weights as `resnet18_unet_acdc.pt` (48 MB). Below we load its saved results.
+Its full code and outputs are in appendix E. Its trained weights, `resnet18_unet_acdc.pt` (48 MB), are on the repository's Releases page (release `v1.0-resnet18`). Below we load its saved results.
 """),
     code("""
 rn = json.load(open(os.path.join(OUT, "resnet18_results.json")))
@@ -171,7 +173,7 @@ print("U-Net test:", u_seg)
 print("U-Net confidence:", confidence([p.numpy() for p in u_prob], u_pred, te))
 
 forest_file = os.path.join(MODEL_DIR, "acdc_forest.joblib")
-if os.path.exists(forest_file):          # 272 MB, not on GitHub; rebuilt by acdc_forest_baseline.py
+if os.path.exists(forest_file):          # 272 MB: download from the repo's Releases (v1.0-random-forest) into cmps261-work/models/
     forest = joblib.load(forest_file)
     f_pred = [forest.predict(features(s)) for s in te]
     print("Forest test:", scores(sum(confusion(p, s["mask"]) for p, s in zip(f_pred, te))))

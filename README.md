@@ -33,6 +33,7 @@ All model choices were made on 20 validation patients. The test set was used onc
 | `acdc_diagnosis_baseline.py` | Heart measurements and diagnosis models |
 | `acdc_unet_pilot.py` | First U-Net run |
 | `acdc_experiments.py` | U-Net variants, diagnosis tuning, final test |
+| `acdc_resnet18_unet.ipynb` | Sarra's pretrained ResNet18-UNet: training and evaluation (also included in the main notebook, appendix E) |
 | `results/` | Scores, tuning tables, split, logs and figures |
 | `cmps261-work/models/acdc_unet_E.pt` | **Final trained U-Net** (PyTorch weights) |
 | `cmps261-work/models/acdc_diagnosis_final.joblib` | Final diagnosis model (scikit-learn) |
@@ -41,7 +42,16 @@ All model choices were made on 20 validation patients. The test set was used onc
 | `results/resnet18_results.json` | Verified validation and test metrics for Pretrained ResNet18-UNet |
 | `resnet18_unet_acdc.pt` (Releases) | Trained Pretrained ResNet18-UNet weights (PyTorch, available under GitHub Releases) |
 
-The random forest model (272 MB) is over GitHub's file limit, so it isn't included. `acdc_forest_baseline.py` rebuilds it.
+### Large models: on the Releases page
+
+Two trained models are too large for the repository, so they are attached to GitHub Releases instead:
+
+| Model | Release | File |
+|---|---|---|
+| Random forest baseline (272 MB) | [v1.0-random-forest](https://github.com/mohamadAlame/ML-Project-ACDC-Challenge/releases/tag/v1.0-random-forest) | `acdc_forest.joblib` |
+| Pretrained ResNet18-UNet (48 MB) | [v1.0-resnet18](https://github.com/mohamadAlame/ML-Project-ACDC-Challenge/releases/tag/v1.0-resnet18) | `resnet18_unet_acdc.pt` |
+
+Download them into `cmps261-work/models/` to use them with the notebook.
 
 ## How to run
 
